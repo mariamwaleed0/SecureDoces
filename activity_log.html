@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Document Activity Log{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Document Activity Log
+                    </h5>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-light btn-sm" onclick="refreshLog()">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                        <button class="btn btn-light btn-sm" onclick="exportToExcel()">
+                            <i class="fas fa-file-excel"></i>
+                            Export
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Search Filters -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" placeholder="Search by user, email, or action...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="actionFilter">
+                                <option value="">All Actions</option>
+                                <option value="document_update">Update</option>
+                                <option value="document_upload">Upload</option>
+                                <option value="document_delete">Delete</option>
+                                <option value="rename_document">Rename</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" class="form-control" id="dateFilter">
+                        </div>
+                    </div>
+
+                    <!-- Activity Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="activityTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>User</th>
+                                    <th>Email</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                    <th>IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="activityTableBody">
+                                <!-- Will be filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Loading Message -->
+                    <div id="loadingMessage" class="text-center py-4 d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="noResultsMessage" class="text-center py-4 d-none">
+                        <i class="fas fa-info-circle text-muted fa-2x mb-3"></i>
+                        <p class="text-muted">No activities found</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Load activities when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    loadActivities();
+    setupFilters();
+});
+
+// Function to load activities
+function loadActivities() {
+    showLoading();
+    fetch('/activity-log')
+        .then(response => response.json())
+        .then(data => {
+            hideLoading();
+            if (data.activities && data.activities.length > 0) {
+                displayActivities(data.activities);
+            } else {
+                showNoResults();
+            }
+        })
+        .catch(error => {
+            hideLoading();
+            showError('Error loading activities');
+            console.error('Error:', error);
+        });
+}
+
+// Function to display activities in table
+function displayActivities(activities) {
+    const tbody = document.getElementById('activityTableBody');
+    tbody.innerHTML = '';
+    activities.forEach(activity => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${formatDate(activity.timestamp)}</td>
+            <td>${activity.user_name || activity.user_id}</td>
+            <td>${activity.user_email || ''}</td>
+            <td>${formatAction(activity.action)}</td>
+            <td>${activity.description}</td>
+            <td>${activity.ip_address || '-'}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Function to format date
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// Function to format action
+function formatAction(action) {
+    const actions = {
+        'document_update': 'Update',
+        'document_upload': 'Upload',
+        'document_delete': 'Delete',
+        'rename_document': 'Rename'
+    };
+    return actions[action] || action;
+}
+
+// Function to refresh log
+function refreshLog() {
+    loadActivities();
+}
+
+// Function to export to Excel
+function exportToExcel() {
+    const table = document.getElementById('activityTable');
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Activity Log"});
+    XLSX.writeFile(wb, "document_activity_log.xlsx");
+}
+
+// Function to show loading message
+function showLoading() {
+    document.getElementById('loadingMessage').classList.remove('d-none');
+    document.getElementById('noResultsMessage').classList.add('d-none');
+}
+
+// Function to hide loading message
+function hideLoading() {
+    document.getElementById('loadingMessage').classList.add('d-none');
+}
+
+// Function to show no results message
+function showNoResults() {
+    document.getElementById('noResultsMessage').classList.remove('d-none');
+}
+
+// Function to show error message
+function showError(message) {
+    alert(message);
+}
+
+// Setup filters
+function setupFilters() {
+    const searchInput = document.getElementById('searchInput');
+    const actionFilter = document.getElementById('actionFilter');
+    const dateFilter = document.getElementById('dateFilter');
+
+    // Apply filters on change
+    [searchInput, actionFilter, dateFilter].forEach(element => {
+        element.addEventListener('change', applyFilters);
+    });
+}
+
+// Apply filters
+function applyFilters() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const actionValue = document.getElementById('actionFilter').value;
+    const dateValue = document.getElementById('dateFilter').value;
+
+    const rows = document.getElementById('activityTableBody').getElementsByTagName('tr');
+
+    for (let row of rows) {
+        const cells = row.getElementsByTagName('td');
+        const action = cells[3].textContent;
+        const description = cells[4].textContent.toLowerCase();
+        const user = cells[1].textContent.toLowerCase();
+        const email = cells[2].textContent.toLowerCase();
+        const date = cells[0].textContent;
+
+        const matchesSearch = description.includes(searchTerm) || user.includes(searchTerm) || email.includes(searchTerm);
+        const matchesAction = !actionValue || action === formatAction(actionValue);
+        const matchesDate = !dateValue || date.includes(dateValue);
+
+        row.style.display = matchesSearch && matchesAction && matchesDate ? '' : 'none';
+    }
+}
+</script>
+{% endblock %} 

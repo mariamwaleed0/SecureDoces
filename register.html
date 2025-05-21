@@ -1,0 +1,361 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.auth-card:hover {
+    transform: translateY(-5px);
+}
+
+.auth-header {
+    background: transparent;
+    border-bottom: none;
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 1rem;
+}
+
+.auth-header h4 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: #7f8c8d;
+    margin-bottom: 0;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border: none;
+    color: #6c757d;
+    padding: 0.75rem 1rem;
+}
+
+.form-control {
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    background-color: #fff;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-outline-secondary {
+    border: none;
+    background: transparent;
+    color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background: #f8f9fa;
+    color: #000;
+}
+
+.auth-footer {
+    background: transparent;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.auth-footer a {
+    color: #000DFF;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.auth-footer a:hover {
+    color: #6B73FF;
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade.show {
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+/* Improve icon appearance */
+.fas {
+    font-size: 1.1rem;
+}
+
+/* Improve input field appearance on focus */
+.input-group:focus-within {
+    box-shadow: 0 0 0 3px rgba(107, 115, 255, 0.2);
+}
+
+/* Add button animation effect */
+button {
+    transition: all 0.3s ease;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4">Create Account</h2>
+                
+                <form method="POST" action="{{ url_for('auth.register') }}" id="registerForm" enctype="multipart/form-data">
+                    <div class="mb-3 text-center">
+                        <div class="profile-picture-preview mb-3">
+                            <img id="profilePreview" src="{{ url_for('static', filename='profile_pictures/default_profile.png') }}" 
+                                 alt="Profile Preview" 
+                                 class="rounded-circle"
+                                 style="width: 150px; height: 150px; object-fit: cover;">
+                        </div>
+                        <div class="mb-3">
+                            <label for="profile_picture" class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*" onchange="previewImage(this)">
+                            <div class="form-text">Choose a profile picture (optional)</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="mb-3 position-relative">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" name="password" required autocomplete="new-password">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword" tabindex="-1"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-outline-info" type="button" id="generatePassword" tabindex="-1"><i class="fas fa-magic"></i></button>
+                        </div>
+                        <div class="form-text">Password must be at least 8 characters and include uppercase, lowercase, number, and special character.</div>
+                        <div id="password-checklist" class="mb-2">
+                            <ul class="list-unstyled mb-1">
+                                <li id="check-length"><i class="fas fa-times text-danger"></i> At least 8 characters</li>
+                                <li id="check-upper"><i class="fas fa-times text-danger"></i> Uppercase letter (A-Z)</li>
+                                <li id="check-lower"><i class="fas fa-times text-danger"></i> Lowercase letter (a-z)</li>
+                                <li id="check-number"><i class="fas fa-times text-danger"></i> Number (0-9)</li>
+                                <li id="check-special"><i class="fas fa-times text-danger"></i> Special character (!@#$%)</li>
+                                <li id="check-common"><i class="fas fa-check text-success"></i> Not a common password</li>
+                            </ul>
+                        </div>
+                        <div id="password-strength" class="mt-2">
+                            <div class="progress" style="height: 8px;">
+                                <div id="password-strength-bar" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                            </div>
+                            <small id="password-strength-text" class="fw-bold"></small>
+                        </div>
+                        <div class="form-text text-info">The longer and more complex your password, the stronger it is! Don't use common passwords or personal information.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required autocomplete="new-password">
+                        <div id="match-message" class="form-text"></div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="mb-0">Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function checkPasswordStrength(password) {
+    let score = 0;
+    let requirements = [
+        /.{8,}/, // 8 chars
+        /[A-Z]/, // uppercase
+        /[a-z]/, // lowercase
+        /[0-9]/, // number
+        /[^A-Za-z0-9]/ // special char
+    ];
+    requirements.forEach((re) => { if (re.test(password)) score++; });
+    // Common passwords
+    const common = ['password','123456','qwerty','letmein','admin'];
+    if (common.includes(password.toLowerCase())) score = 1;
+    return score;
+}
+
+function getStrengthLabel(score) {
+    if (score <= 2) return {text: 'Weak', color: 'bg-danger'};
+    if (score === 3) return {text: 'Medium', color: 'bg-warning'};
+    if (score === 4) return {text: 'Strong', color: 'bg-info'};
+    if (score === 5) return {text: 'Excellent', color: 'bg-success'};
+    return {text: '', color: ''};
+}
+
+function generateStrongPassword() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
+    let pass = '';
+    for (let i = 0; i < 14; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+    return pass;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirm_password');
+    const bar = document.getElementById('password-strength-bar');
+    const text = document.getElementById('password-strength-text');
+    const form = document.getElementById('registerForm');
+    const toggleBtn = document.getElementById('togglePassword');
+    const genBtn = document.getElementById('generatePassword');
+    const matchMsg = document.getElementById('match-message');
+    // checklist
+    const checkLength = document.getElementById('check-length');
+    const checkUpper = document.getElementById('check-upper');
+    const checkLower = document.getElementById('check-lower');
+    const checkNumber = document.getElementById('check-number');
+    const checkSpecial = document.getElementById('check-special');
+    const checkCommon = document.getElementById('check-common');
+    // Prevent paste
+    passwordInput.addEventListener('paste', e => e.preventDefault());
+    // Show/hide
+    toggleBtn.addEventListener('click', function() {
+        const type = passwordInput.type === 'password' ? 'text' : 'password';
+        passwordInput.type = type;
+        toggleBtn.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+    // Generate strong password
+    genBtn.addEventListener('click', function() {
+        const strong = generateStrongPassword();
+        passwordInput.value = strong;
+        passwordInput.dispatchEvent(new Event('input'));
+        confirmInput.value = strong;
+        confirmInput.dispatchEvent(new Event('input'));
+    });
+    // Dynamic check
+    passwordInput.addEventListener('input', function() {
+        const val = passwordInput.value;
+        // checklist
+        checkLength.innerHTML = (/.{8,}/.test(val) ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>') + ' At least 8 characters';
+        checkUpper.innerHTML = (/[A-Z]/.test(val) ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>') + ' Uppercase letter (A-Z)';
+        checkLower.innerHTML = (/[a-z]/.test(val) ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>') + ' Lowercase letter (a-z)';
+        checkNumber.innerHTML = (/[0-9]/.test(val) ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>') + ' Number (0-9)';
+        checkSpecial.innerHTML = (/[^A-Za-z0-9]/.test(val) ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>') + ' Special character (!@#$%)';
+        const common = ['password','123456','qwerty','letmein','admin'];
+        checkCommon.innerHTML = (!common.includes(val.toLowerCase()) ? '<i class="fas fa-check text-success"></i>' : '<i class="fas fa-times text-danger"></i>') + ' Not a common password';
+        // Password strength indicator
+        const score = checkPasswordStrength(val);
+        const label = getStrengthLabel(score);
+        bar.style.width = (score*20) + '%';
+        bar.className = 'progress-bar ' + label.color;
+        text.textContent = label.text;
+        text.className = 'fw-bold ms-2 ' + label.color;
+        // Check match
+        if (confirmInput.value.length > 0) {
+            if (val === confirmInput.value) {
+                matchMsg.textContent = 'Passwords match';
+                matchMsg.className = 'form-text text-success';
+            } else {
+                matchMsg.textContent = 'Passwords do not match';
+                matchMsg.className = 'form-text text-danger';
+            }
+        } else {
+            matchMsg.textContent = '';
+        }
+    });
+    // Check match
+    confirmInput.addEventListener('input', function() {
+        if (passwordInput.value === confirmInput.value) {
+            matchMsg.textContent = 'Passwords match';
+            matchMsg.className = 'form-text text-success';
+        } else {
+            matchMsg.textContent = 'Passwords do not match';
+            matchMsg.className = 'form-text text-danger';
+        }
+    });
+    // Prevent submission if conditions are not met
+    form.addEventListener('submit', function(e) {
+        const val = passwordInput.value;
+        const score = checkPasswordStrength(val);
+        if (score < 4 || passwordInput.value !== confirmInput.value) {
+            e.preventDefault();
+            alert('Weak password or not matching!');
+        }
+    });
+});
+
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profilePreview').src = e.target.result;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
+{% endblock %} 

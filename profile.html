@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Document Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    {% set completed = 0 %}
+    {% if current_user.profile_picture and current_user.profile_picture != 'default_profile.png' %}{% set completed = completed + 1 %}{% endif %}
+    {% if current_user.name %}{% set completed = completed + 1 %}{% endif %}
+    {% if current_user.email %}{% set completed = completed + 1 %}{% endif %}
+    {% if current_user.is_two_factor_enabled %}{% set completed = completed + 1 %}{% endif %}
+    {% if current_user.phone %}{% set completed = completed + 1 %}{% endif %}
+    {% if current_user.bio %}{% set completed = completed + 1 %}{% endif %}
+    {% set percent = (completed / 6) * 100 %}
+    <div class="mb-4">
+      <label>Profile Completion: {{ percent|round(0) }}%</label>
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: {{ percent }}%;" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+      </div>
+    </div>
+    <div class="row">
+        <!-- Profile Information -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <div class="profile-picture-preview mb-3 text-center">
+                            <img src="{{ url_for('static', filename='profile_pictures/' ~ (current_user.profile_picture or 'default_profile.png')) }}"
+                                 alt="Profile Picture"
+                                 class="rounded-circle"
+                                 style="width: 120px; height: 120px; object-fit: cover;">
+                        </div>
+                        <h4>{{ current_user.name }}</h4>
+                        <p class="text-muted">{{ current_user.email }}</p>
+                    </div>
+                    <hr>
+                    <div class="text-start">
+                        <p><strong>Role:</strong> 
+                            {% if current_user.role == 'admin' %}
+                            <span class="badge bg-primary">System Administrator</span>
+                            {% else %}
+                            <span class="badge bg-secondary">User</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Join Date:</strong> <br>{{ current_user.created_at.strftime('%Y-%m-%d') }}</p>
+                        <p><strong>Last Update:</strong> <br>{{ current_user.last_update.strftime('%Y-%m-%d %H:%M') if current_user.last_update else 'Not updated' }}</p>
+                        <p><strong>Last Activity:</strong> <br>{{ current_user.last_login.strftime('%Y-%m-%d %H:%M') if current_user.last_login else 'None' }}</p>
+                        <p><strong>Two-Factor Auth:</strong> 
+                            {% if current_user.two_fa_enabled %}
+                            <span class="badge bg-success">Enabled</span>
+                            {% else %}
+                            <span class="badge bg-warning">Disabled</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Update Form -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Update Profile</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('auth.update_profile') }}">
+                        <!-- Error and Success Messages -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <!-- Name -->
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" 
+                                   value="{{ current_user.name }}" required>
+                        </div>
+
+                        <!-- Phone Number -->
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="phone" name="phone" value="{{ current_user.phone or '' }}">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" 
+                                   value="{{ current_user.email }}" required>
+                        </div>
+
+                        <!-- Bio -->
+                        <div class="mb-3">
+                            <label for="bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="bio" name="bio" rows="3">{{ current_user.bio or '' }}</textarea>
+                        </div>
+
+                        <!-- Change Password -->
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password">
+                            <small class="text-muted">Leave empty if you don't want to change the password</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password">
+                            <div class="form-text">Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character.</div>
+                            <div id="password-strength" class="mt-2">
+                                <div class="progress" style="height: 8px;">
+                                    <div id="password-strength-bar" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                                </div>
+                                <small id="password-strength-text" class="fw-bold"></small>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                        <button type="button" class="btn btn-danger ms-2" onclick="confirmDeleteAccount()">
+                            <i class="fas fa-trash-alt me-2"></i>Delete Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Two-Factor Authentication Setup -->
+            {% if not current_user.two_fa_enabled %}
+            <!-- Remove old card completely -->
+            {% endif %}
+        </div>
+    </div>
+    <!-- New button/icon for enabling two-factor authentication -->
+    {% if not current_user.two_fa_enabled %}
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-6">
+            <a href="{{ url_for('auth.setup_2fa') }}" class="btn btn-outline-warning btn-lg w-100 d-flex align-items-center justify-content-center gap-2 shadow stylish-2fa-btn-new" style="font-size:1.3em; border-radius: 1.5rem; transition: background 0.2s, box-shadow 0.2s;">
+                <i class="fas fa-lock fa-lg"></i>
+                <span>Start Two-Factor Authentication Setup</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.avatar-circle {
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+}
+.stylish-2fa-btn-new:hover {
+    background: linear-gradient(90deg, #ffc107 60%, #ffecb3 100%);
+    color: #333 !important;
+    box-shadow: 0 4px 16px rgba(255,193,7,0.18);
+    text-decoration: none;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function checkPasswordStrength(password) {
+    let score = 0;
+    let requirements = [
+        /.{8,}/, // 8 chars
+        /[A-Z]/, // uppercase
+        /[a-z]/, // lowercase
+        /[0-9]/, // number
+        /[^A-Za-z0-9]/ // special char
+    ];
+    requirements.forEach((re) => { if (re.test(password)) score++; });
+    // Common passwords
+    const common = ['password','123456','qwerty','letmein','admin'];
+    if (common.includes(password.toLowerCase())) score = 1;
+    return score;
+}
+
+function getStrengthLabel(score) {
+    if (score <= 2) return {text: 'Weak', color: 'bg-danger'};
+    if (score === 3) return {text: 'Medium', color: 'bg-warning'};
+    if (score === 4) return {text: 'Strong', color: 'bg-info'};
+    if (score === 5) return {text: 'Excellent', color: 'bg-success'};
+    return {text: '', color: ''};
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('new_password');
+    const bar = document.getElementById('password-strength-bar');
+    const text = document.getElementById('password-strength-text');
+    const form = passwordInput.closest('form');
+    passwordInput.addEventListener('input', function() {
+        const val = passwordInput.value;
+        const score = checkPasswordStrength(val);
+        const label = getStrengthLabel(score);
+        bar.style.width = (score*20) + '%';
+        bar.className = 'progress-bar ' + label.color;
+        text.textContent = label.text;
+        text.className = 'fw-bold ms-2 ' + label.color;
+    });
+    form.addEventListener('submit', function(e) {
+        const val = passwordInput.value;
+        if (val.length > 0) {
+            const score = checkPasswordStrength(val);
+            if (score < 4) {
+                e.preventDefault();
+                alert('Password is weak or does not meet all requirements!');
+            }
+        }
+    });
+});
+
+function confirmDeleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone!')) {
+        fetch("{{ url_for('auth.delete_account') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                // Add CSRF token here if you have one
+                // 'X-CSRFToken': '{{ csrf_token() if csrf_token is defined else '' }}'
+            },
+            credentials: 'same-origin'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Account deleted successfully. You will be redirected to the home page.');
+                window.location.href = '/';
+            } else {
+                alert('Error deleting account: ' + (data.message || ''));
+            }
+        });
+    }
+}
+</script>
+{% endblock %} 

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4">Login</h2>
+                
+                <form method="POST" action="{{ url_for('auth.login') }}">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required autofocus>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">Remember me</label>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                    </div>
+                </form>
+                
+                <div class="d-flex justify-content-center gap-2 mt-3 mb-2">
+                    <a href="{{ url_for('auth.google_login') }}" class="btn btn-danger btn-sm px-3" style="background: linear-gradient(90deg, #ea4335 60%, #fff 100%); color: #fff; border: none; min-width: 120px;">
+                        <i class="fab fa-google me-1"></i> Google
+                    </a>
+                    <a href="{{ url_for('auth.github_login') }}" class="btn btn-dark btn-sm px-3" style="background: linear-gradient(90deg, #333 60%, #fff 100%); color: #fff; border: none; min-width: 120px;">
+                        <i class="fab fa-github me-1"></i> GitHub
+                    </a>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <p class="mb-0">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        // Email validation
+        if (!emailInput.value) {
+            showError(emailInput, 'Email is required');
+            isValid = false;
+        } else if (!isValidEmail(emailInput.value)) {
+            showError(emailInput, 'Please enter a valid email address');
+            isValid = false;
+        } else {
+            removeError(emailInput);
+        }
+        
+        // Password validation
+        if (!passwordInput.value) {
+            showError(passwordInput, 'Password is required');
+            isValid = false;
+        } else {
+            removeError(passwordInput);
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+    
+    function showError(input, message) {
+        const formControl = input.parentElement;
+        const errorDiv = formControl.querySelector('.invalid-feedback') || document.createElement('div');
+        errorDiv.className = 'invalid-feedback';
+        errorDiv.textContent = message;
+        
+        if (!formControl.querySelector('.invalid-feedback')) {
+            formControl.appendChild(errorDiv);
+        }
+        
+        input.classList.add('is-invalid');
+    }
+    
+    function removeError(input) {
+        const formControl = input.parentElement;
+        const errorDiv = formControl.querySelector('.invalid-feedback');
+        
+        if (errorDiv) {
+            errorDiv.remove();
+        }
+        
+        input.classList.remove('is-invalid');
+    }
+    
+    function isValidEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+});
+</script>
+{% endblock %} 

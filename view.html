@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{{ document.filename }} - Document Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{{ url_for('documents.list_documents') }}">Documents</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ document.filename }}</li>
+                </ol>
+            </nav>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="card shadow">
+                <div class="card-header bg-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="h3 mb-0">
+                            <i class="fas fa-file-alt text-primary me-2"></i>
+                            {{ document.filename }}
+                        </h1>
+                        <div class="btn-group">
+                            <a href="{{ url_for('documents.download_document', doc_id=document.id) }}" class="btn btn-primary">
+                                <i class="fas fa-download me-2"></i>
+                                Download
+                            </a>
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#renameModal-{{ document.id }}">
+                                <i class="fas fa-edit me-2"></i> Rename
+                            </button>
+                            <form action="{{ url_for('documents.delete_document', doc_id=document.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this document?')">
+                                    <i class="fas fa-trash-alt me-2"></i>
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h5 class="card-title mb-3">File Information</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>File Type</span>
+                                    <span class="badge bg-primary">{{ document.mime_type }}</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>File Size</span>
+                                    <span class="badge bg-info">{{ '{:.1f}'.format(document.file_size / 1024) }} KB</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Upload Date</span>
+                                    <span class="text-muted">{{ document.upload_date.strftime('%Y-%m-%d %H:%M') }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="card-title mb-3">Security</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Encryption</span>
+                                    <span class="badge bg-success">Encrypted</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span>Digital Fingerprint</span>
+                                    <span class="text-muted text-truncate" style="max-width: 200px;" title="{{ document.content_hash }}">
+                                        {{ document.content_hash }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Rename Modal -->
+            <div class="modal fade" id="renameModal-{{ document.id }}" tabindex="-1" aria-labelledby="renameModalLabel-{{ document.id }}" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <form method="POST" action="{{ url_for('documents.rename_document', doc_id=document.id) }}">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="renameModalLabel-{{ document.id }}">Rename Document</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label for="new_name_{{ document.id }}" class="form-label">New Document Name</label>
+                        <input type="text" class="form-control" id="new_name_{{ document.id }}" name="new_name" value="{{ document.filename }}" required>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

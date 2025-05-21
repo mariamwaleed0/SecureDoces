@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Document Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h2 class="mb-4">System Settings</h2>
+            
+            <!-- System Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Security Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Security Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('auth.update_security_settings') }}">
+                        <!-- Two-Factor Authentication -->
+                        <div class="mb-4">
+                            <label class="form-label d-block">Two-Factor Authentication</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_two_factor_enabled" 
+                                       name="is_two_factor_enabled" {% if current_user.is_two_factor_enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="is_two_factor_enabled">
+                                    Enable Two-Factor Authentication
+                                </label>
+                            </div>
+                            <small class="text-muted">
+                                It is recommended to enable two-factor authentication to protect your account
+                            </small>
+                        </div>
+
+                        <!-- Change Password -->
+                        <div class="mb-3">
+                            <label for="current_password" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="current_password" name="current_password">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            Save Security Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notification Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bell me-2"></i>
+                        Notification Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('auth.update_notification_settings') }}">
+                        <!-- Email Notifications -->
+                        <div class="mb-4">
+                            <label class="form-label">Email Notifications</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="email_login" 
+                                       name="notifications[]" value="email_login" checked>
+                                <label class="form-check-label" for="email_login">
+                                    Login Alerts
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="email_upload" 
+                                       name="notifications[]" value="email_upload" checked>
+                                <label class="form-check-label" for="email_upload">
+                                    Document Upload Notifications
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="email_share" 
+                                       name="notifications[]" value="email_share" checked>
+                                <label class="form-check-label" for="email_share">
+                                    Document Sharing Notifications
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- System Notifications -->
+                        <div class="mb-4">
+                            <label class="form-label">System Notifications</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="system_updates" 
+                                       name="notifications[]" value="system_updates" checked>
+                                <label class="form-check-label" for="system_updates">
+                                    System Updates
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="security_alerts" 
+                                       name="notifications[]" value="security_alerts" checked>
+                                <label class="form-check-label" for="security_alerts">
+                                    Security Alerts
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-save me-2"></i>
+                            Save Notification Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customization Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-paint-brush me-2"></i>
+                        Customization Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('auth.update_customization_settings') }}">
+                        <!-- Theme -->
+                        <div class="mb-4">
+                            <label class="form-label">Theme</label>
+                            <select class="form-select" name="theme">
+                                <option value="light" {% if current_user.theme == 'light' %}selected{% endif %}>Light</option>
+                                <option value="dark" {% if current_user.theme == 'dark' %}selected{% endif %}>Dark</option>
+                                <option value="auto" {% if current_user.theme == 'auto' %}selected{% endif %}>Auto (System)</option>
+                            </select>
+                        </div>
+
+                        <!-- Language -->
+                        <div class="mb-4">
+                            <label class="form-label">Language</label>
+                            <select class="form-select" name="language">
+                                <option value="ar" {% if current_user.language == 'ar' %}selected{% endif %}>Arabic</option>
+                                <option value="en" {% if current_user.language == 'en' %}selected{% endif %}>English</option>
+                            </select>
+                        </div>
+
+                        <!-- Timezone -->
+                        <div class="mb-4">
+                            <label class="form-label">Timezone</label>
+                            <select class="form-select" name="timezone">
+                                <option value="UTC+3" {% if current_user.timezone == 'UTC+3' %}selected{% endif %}>Saudi Arabia Time (UTC+3)</option>
+                                <option value="UTC+2" {% if current_user.timezone == 'UTC+2' %}selected{% endif %}>Egypt Time (UTC+2)</option>
+                                <option value="UTC+1" {% if current_user.timezone == 'UTC+1' %}selected{% endif %}>Morocco Time (UTC+1)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>
+                            Save Customization Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storage Settings -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-hdd me-2"></i>
+                        Storage Settings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Storage Information -->
+                    <div class="mb-4">
+                        <h6>Storage Used</h6>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 25%"></div>
+                        </div>
+                        <small class="text-muted">2.5 GB of 10 GB</small>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('auth.update_storage_settings') }}">
+                        <!-- Storage Cleanup -->
+                        <div class="mb-4">
+                            <label class="form-label">Automatic Cleanup</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="auto_cleanup" 
+                                       name="auto_cleanup" checked>
+                                <label class="form-check-label" for="auto_cleanup">
+                                    Automatically clean up old documents
+                                </label>
+                            </div>
+                            <select class="form-select mt-2" name="cleanup_period">
+                                <option value="30">After 30 days</option>
+                                <option value="60">After 60 days</option>
+                                <option value="90">After 90 days</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save me-2"></i>
+                            Save Storage Settings
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Update two-factor authentication status
+    const is2FAEnabled = {{ current_user.is_two_factor_enabled|tojson }};
+    const twoFASwitch = document.getElementById('is_two_factor_enabled');
+    if (twoFASwitch) {
+        twoFASwitch.addEventListener('change', function() {
+            if (this.checked && !is2FAEnabled) {
+                // Redirect user directly to two-factor authentication setup page
+                window.location.href = "{{ url_for('auth.setup_2fa') }}";
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 

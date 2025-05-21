@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-section {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.9), rgba(63, 55, 201, 0.9)), url('{{ url_for("static", filename="img/hero-bg.jpg") }}');
+    background-size: cover;
+    background-position: center;
+    padding: 6rem 0;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.hero-btn {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    min-width: 200px;
+}
+
+.btn-light {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--primary-color);
+}
+
+.btn-light:hover {
+    background: white;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-outline-light {
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    color: white;
+}
+
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.features-section {
+    padding: 5rem 0;
+    background: white;
+}
+
+.feature-card {
+    text-align: center;
+    padding: 2rem;
+    height: 100%;
+    background: white;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+.feature-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--dark-bg);
+}
+
+.feature-description {
+    color: #666;
+    line-height: 1.6;
+}
+
+.cta-section {
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    padding: 4rem 0;
+    color: white;
+    text-align: center;
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.cta-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+/* تأثيرات حركية */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="hero-content">
+            <h1 class="hero-title">Secure Document Management System</h1>
+            <p class="hero-subtitle">
+                An integrated platform for managing and organizing your documents securely and efficiently.
+                Enjoy a seamless experience with advanced security features and an easy-to-use interface.
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('auth.register') }}" class="btn hero-btn btn-light">
+                    <i class="fas fa-user-plus ms-2"></i>
+                    Create New Account
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn hero-btn btn-outline-light">
+                    <i class="fas fa-sign-in-alt ms-2"></i>
+                    Login
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon floating">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Maximum Protection</h3>
+                    <p class="feature-description">
+                        Advanced document encryption and two-factor authentication
+                        to ensure your data is secure.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon floating">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Ease of Use</h3>
+                    <p class="feature-description">
+                        A simple and easy-to-use interface that allows you to upload and organize
+                        your documents effortlessly.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon floating">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3 class="feature-title">مزامنة تلقائية</h3>
+                    <p class="feature-description">
+                        مزامنة فورية لمستنداتك عبر جميع أجهزتك
+                        مع نسخ احتياطية آمنة
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon floating">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="feature-title">Advanced Features</h3>
+                    <p class="feature-description">
+                        Manage, search, and share your documents with advanced tools
+                        and seamless integration.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Section -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="cta-title">Start Managing Your Documents Securely Today!</h2>
+        <p class="cta-subtitle">
+            Join now and enjoy a secure, easy, and advanced document management experience.
+        </p>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">
+            <i class="fas fa-user-plus ms-2"></i>
+            Create Account
+        </a>
+    </div>
+</section>
+
+<!-- Footer Section -->
+<footer class="py-4 text-center" style="background: #f8f9fa;">
+    <div class="container">
+        <p class="mb-0">&copy; 2025 Secure Document Management System. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // تأثيرات حركية للأزرار
+    const buttons = document.querySelectorAll('.hero-btn');
+    buttons.forEach(button => {
+        button.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        button.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %} 

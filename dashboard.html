@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}لوحة التحكم - نظام إدارة المستندات{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <h1 class="text-center mb-4">مرحباً، {{ current_user.name }}</h1>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <!-- بطاقة المستندات -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-alt fa-3x mb-3 text-primary"></i>
+                    <h5 class="card-title">المستندات</h5>
+                    <p class="card-text">عرض وإدارة جميع المستندات الخاصة بك</p>
+                    <a href="{{ url_for('documents.list_documents') }}" class="btn btn-primary">
+                        عرض المستندات
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- بطاقة رفع مستند جديد -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-upload fa-3x mb-3 text-success"></i>
+                    <h5 class="card-title">رفع مستند جديد</h5>
+                    <p class="card-text">قم برفع وتشفير مستندات جديدة</p>
+                    <a href="{{ url_for('documents.upload_document') }}" class="btn btn-success">
+                        رفع مستند
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if current_user.role == 'admin' %}
+        <!-- بطاقة إدارة المستخدمين (للمسؤولين فقط) -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-users-cog fa-3x mb-3 text-info"></i>
+                                        <h5 class="card-title">إدارة المستخدمين</h5>                    <p class="card-text">إدارة حسابات المستخدمين والصلاحيات</p>                    <a href="{{ url_for('admin.users') }}" class="btn btn-info">                        إدارة المستخدمين                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- إحصائيات سريعة -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h6 class="card-title">عدد المستندات</h6>
+                    <h2 class="card-text text-primary">{{ document_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h6 class="card-title">المساحة المستخدمة</h6>
+                    <h2 class="card-text text-success">{{ storage_used }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-body text-center">
+                    <h6 class="card-title">آخر تحديث</h6>
+                    <h2 class="card-text text-info">{{ last_update }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

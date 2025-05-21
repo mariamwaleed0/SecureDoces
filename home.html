@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Document Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- User Welcome -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <div class="profile-picture-container mb-4">
+                <img src="{{ url_for('profile_picture', filename=current_user.profile_picture) }}" 
+                     alt="Profile Picture" 
+                     class="rounded-circle profile-picture"
+                     style="width: 150px; height: 150px; object-fit: cover;">
+                <form action="{{ url_for('upload_profile_picture') }}" method="post" enctype="multipart/form-data" class="mt-2">
+                    <div class="input-group justify-content-center">
+                        <input type="file" name="profile_picture" class="form-control" style="max-width: 200px;" accept="image/*">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Update
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <h1 class="display-4 mb-3">Welcome, {{ current_user.name }}</h1>
+            <p class="lead text-muted">Welcome to the Secure Document Management System</p>
+        </div>
+    </div>
+
+    <!-- Quick Statistics -->
+    <div class="row mb-5">
+        <div class="col-md-4 mb-4">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-file-alt fa-3x mb-3"></i>
+                    <h5 class="card-title">Documents</h5>
+                    <h2 class="display-4">{{ document_count }}</h2>
+                    <p class="card-text">Total Documents</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-hdd fa-3x mb-3"></i>
+                    <h5 class="card-title">Storage Used</h5>
+                    <h2 class="display-4">{{ storage_used }}</h2>
+                    <p class="card-text">of Total Space</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-3x mb-3"></i>
+                    <h5 class="card-title">Last Activity</h5>
+                    <h2 class="h4">{{ last_activity }}</h2>
+                    <p class="card-text">Last Document Update</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Access -->
+    <div class="row">
+        <!-- Document Management -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                        <i class="fas fa-folder-open fa-2x"></i>
+                    </div>
+                    <h5 class="card-title">Documents</h5>
+                    <p class="card-text">View and manage all your documents</p>
+                    <a href="{{ url_for('documents.list_documents') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-circle-right me-2"></i>
+                        View Documents
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload New Document -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon bg-success bg-gradient text-white rounded-circle mb-3">
+                        <i class="fas fa-cloud-upload-alt fa-2x"></i>
+                    </div>
+                    <h5 class="card-title">Upload Document</h5>
+                    <p class="card-text">Upload and encrypt a new document</p>
+                    <a href="{{ url_for('documents.upload_document') }}" class="btn btn-success">
+                        <i class="fas fa-plus me-2"></i>
+                        Upload Document
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon bg-info bg-gradient text-white rounded-circle mb-3">
+                        <i class="fas fa-user-circle fa-2x"></i>
+                    </div>
+                    <h5 class="card-title">Profile</h5>
+                    <p class="card-text">Manage your personal account</p>
+                    <a href="{{ url_for('auth.profile') }}" class="btn btn-info">
+                        <i class="fas fa-user me-2"></i>
+                        View Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="feature-icon bg-warning bg-gradient text-white rounded-circle mb-3">
+                        <i class="fas fa-cog fa-2x"></i>
+                    </div>
+                    <h5 class="card-title">Settings</h5>
+                    <p class="card-text">Customize system settings</p>
+                    <a href="{{ url_for('auth.settings') }}" class="btn btn-warning">
+                        <i class="fas fa-cog me-2"></i>
+                        Settings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if current_user.role == 'admin' %}
+    <!-- Admin Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="mb-4">Admin Dashboard</h3>
+            <div class="row">
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm border-primary">
+                        <div class="card-body text-center">
+                            <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                                <i class="fas fa-users-cog fa-2x"></i>
+                            </div>
+                            <h5 class="card-title">User Management</h5>
+                            <p class="card-text">Manage user accounts and permissions</p>
+                            <a href="{{ url_for('admin.manage_users') }}" class="btn btn-primary">
+                                <i class="fas fa-users me-2"></i>
+                                Manage Users
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_css %}
+<style>
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+</style>
+{% endblock %}
+{% endblock %} 

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block title %}About Us - Document Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-4" style="color: #00e6e6; text-shadow: 0 0 10px #00e6e6;">Meet The Team</h1>
+    <div class="row justify-content-center mt-4">
+      <div class="col-md-3">
+        <div class="card shadow-lg border-0 bg-dark text-white mb-3 glow">
+          <div class="card-body">
+            <h3 class="card-title neon-text">Mohamed Ahmed Aly Mobarak</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-lg border-0 bg-dark text-white mb-3 glow">
+          <div class="card-body">
+            <h3 class="card-title neon-text">Mariem Waled</h3>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card shadow-lg border-0 bg-dark text-white mb-3 glow">
+          <div class="card-body">
+            <h3 class="card-title neon-text">Amr Khaled</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h4 class="mt-4" style="color: #ffb700;">Supervisor: Yahya Ashraf</h4>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-12">
+      <div class="card p-4 shadow-lg border-0" style="background: #181e2a; color: #fff; border-radius: 18px;">
+        <h2 class="mb-4" style="color:#38bdf8;"><i class="fas fa-shield-alt me-2"></i> Security Features</h2>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+          <div class="col">
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-lock fa-2x text-success me-3"></i>
+              <div>
+                <h5 class="fw-bold mb-1">Two-Factor Authentication</h5>
+                <div class="text-muted">Enhanced account security with 2FA</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-file-lock fa-2x text-info me-3"></i>
+              <div>
+                <h5 class="fw-bold mb-1">File Encryption</h5>
+                <div class="text-muted">Secure file storage with AES encryption</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-user-shield fa-2x text-warning me-3"></i>
+              <div>
+                <h5 class="fw-bold mb-1">Role-Based Access Control</h5>
+                <div class="text-muted">Granular permissions for users and admins</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-globe fa-2x text-primary me-3"></i>
+              <div>
+                <h5 class="fw-bold mb-1">Secure Transmission (HTTPS)</h5>
+                <div class="text-muted">All data sent over encrypted HTTPS</div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-file-signature fa-2x text-danger me-3"></i>
+              <div>
+                <h5 class="fw-bold mb-1">Digital Signatures</h5>
+                <div class="text-muted">Sign and verify documents digitally</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-fingerprint fa-2x text-info me-3"></i>
+              <div>
+                <h5 class="fw-bold mb-1">Data Integrity Verification</h5>
+                <div class="text-muted">SHA-256 and HMAC for authenticity</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-check-double fa-2x text-success me-3"></i>
+              <div>
+                <h5 class="fw-bold mb-1">Document Integrity</h5>
+                <div class="text-muted">Verify document authenticity</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-start mb-3">
+              <i class="fas fa-history fa-2x text-secondary me-3"></i>
+              <div>
+                <h5 class="fw-bold mb-1">Activity Logging</h5>
+                <div class="text-muted">Track all system activities</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-12">
+      <h2 class="mb-3"><i class="fas fa-info-circle text-secondary"></i> About the System</h2>
+      <p>
+        This system simulates a real-world document management application often used in legal, HR, or enterprise settings.<br>
+        <b>Roles & Permissions:</b><br>
+        <span class="badge bg-info text-dark">Admin</span> Add/edit/delete users, manage roles, view system logs, upload/edit/delete any document.<br>
+        <span class="badge bg-primary">User</span> Register/login, upload and download own documents, sign documents, view and update own profile.<br>
+        <b>Core Functionalities:</b> Authentication, Document Vault, Profile Management, HTTPS, Security Audit Simulation, Modern UI, and more.
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+.neon-text {
+  color: #00e6e6;
+  text-shadow: 0 0 10px #00e6e6, 0 0 20px #00e6e6;
+  font-weight: bold;
+}
+.glow {
+  box-shadow: 0 0 20px #00e6e6, 0 0 40px #00e6e6;
+  border-radius: 15px;
+}
+.fw-bold {
+  font-weight: 700 !important;
+}
+.text-muted {
+  color: #b0b8c1 !important;
+}
+.card {
+  background: #181e2a !important;
+  color: #fff !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 32px rgba(56, 189, 248, 0.08);
+}
+.list-group-item {
+  font-size: 1.2rem;
+  background: #f8f9fa;
+  border: none;
+}
+</style>
+{% endblock %} 
